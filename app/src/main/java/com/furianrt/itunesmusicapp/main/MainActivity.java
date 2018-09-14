@@ -4,11 +4,11 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,12 +16,12 @@ import android.view.MenuItem;
 
 import com.furianrt.itunesmusicapp.R;
 import com.furianrt.itunesmusicapp.album.AlbumActivity;
+import com.furianrt.itunesmusicapp.data.model.Album;
 import com.furianrt.itunesmusicapp.main.fragments.albumlist.AlbumListFragment;
 import com.furianrt.itunesmusicapp.main.fragments.emptylist.EmptyListFragment;
 import com.furianrt.itunesmusicapp.main.fragments.hello.HelloFragment;
 import com.furianrt.itunesmusicapp.main.fragments.networkerror.NetworkErrorFragment;
 import com.furianrt.itunesmusicapp.utils.NetworkUtils;
-import com.furianrt.itunesmusicapp.data.model.Album;
 
 import java.util.List;
 
@@ -87,10 +87,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         //Восстановление поискового запроса после пересоздания activity
-        if (mSearchQuery != null) {
+        if (mSearchQuery != null && !mSearchQuery.isEmpty()) {
             search.expandActionView();
             searchView.setQuery(mSearchQuery, false);
         }
+
+        search.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mSearchQuery = null;
+                return true;
+            }
+        });
 
         searchView.setOnQueryTextListener(this);
 
