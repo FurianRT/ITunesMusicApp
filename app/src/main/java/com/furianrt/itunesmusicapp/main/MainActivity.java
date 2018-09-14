@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         Intent intent = new Intent(this, AlbumActivity.class);
         intent.putExtra(AlbumActivity.EXTRA_ALBUM, album);
         startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
     @Override

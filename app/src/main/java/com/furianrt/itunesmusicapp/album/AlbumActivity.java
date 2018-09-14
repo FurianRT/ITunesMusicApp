@@ -1,7 +1,7 @@
 package com.furianrt.itunesmusicapp.album;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,16 +14,13 @@ import com.furianrt.itunesmusicapp.data.model.Album;
 import com.furianrt.itunesmusicapp.data.model.Track;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class AlbumActivity extends AppCompatActivity implements AlbumActivityContract.View {
 
@@ -128,5 +125,11 @@ public class AlbumActivity extends AppCompatActivity implements AlbumActivityCon
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.detachView();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 }
