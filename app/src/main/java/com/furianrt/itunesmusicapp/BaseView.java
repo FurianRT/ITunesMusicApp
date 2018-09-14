@@ -10,7 +10,5 @@ public interface BaseView {
     default PresenterComponent getPresenterComponent(Context context) {
         return ((MyApp) context.getApplicationContext()).getAppComponent()
                 .newPresenterComponent(new PresenterModule(context));
-
-
     }
 }

@@ -1,4 +1,4 @@
-package com.furianrt.itunesmusicapp.main.adapter;
+package com.furianrt.itunesmusicapp.main.fragments.albumlist.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
@@ -16,34 +16,34 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainListAdapter extends ListAdapter<Album, MainListAdapter.MainViewHolder> {
+public class AlbumListAdapter extends ListAdapter<Album, AlbumListAdapter.AlbumListViewHolder> {
 
-    private OnMainListItemInteractionListener mListener;
+    private OnAlbumListItemInteractionListener mListener;
 
-    public MainListAdapter(OnMainListItemInteractionListener listener) {
-        super(new MainDiffCallback());
+    public AlbumListAdapter(OnAlbumListItemInteractionListener listener) {
+        super(new AlbumLIstDiffCallback());
         mListener = listener;
     }
 
     @NonNull
     @Override
-    public MainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AlbumListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.activity_main_list_item, parent, false);
-        return new MainViewHolder(view);
+                .inflate(R.layout.fragment_album_list_item, parent, false);
+        return new AlbumListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlbumListViewHolder holder, int position) {
         holder.bindData(getItem(position));
     }
 
-    public interface OnMainListItemInteractionListener {
+    public interface OnAlbumListItemInteractionListener {
 
-        void onMainListItemClick(Album album);
+        void onAlbumListItemClick(Album album);
     }
 
-    class MainViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class AlbumListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.text_album_name)
         TextView mTextViewAlbumName;
@@ -56,7 +56,7 @@ public class MainListAdapter extends ListAdapter<Album, MainListAdapter.MainView
 
         private Album mAlbum;
 
-        public MainViewHolder(View itemView) {
+        public AlbumListViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
@@ -75,7 +75,7 @@ public class MainListAdapter extends ListAdapter<Album, MainListAdapter.MainView
 
         @Override
         public void onClick(View v) {
-            mListener.onMainListItemClick(mAlbum);
+            mListener.onAlbumListItemClick(mAlbum);
         }
     }
 }

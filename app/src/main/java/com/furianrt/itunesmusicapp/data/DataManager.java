@@ -15,5 +15,4 @@ public interface DataManager {
     Single<List<Album>> getAlbumList(String albumName);
 
     Single<List<Track>> getTracksForAlbum(Long albumId);
-
 }

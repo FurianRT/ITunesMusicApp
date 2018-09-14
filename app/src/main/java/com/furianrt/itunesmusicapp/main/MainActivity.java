@@ -1,50 +1,42 @@
 package com.furianrt.itunesmusicapp.main;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.furianrt.itunesmusicapp.R;
-import com.furianrt.itunesmusicapp.Utils.NetworkUtils;
+import com.furianrt.itunesmusicapp.album.AlbumActivity;
+import com.furianrt.itunesmusicapp.main.fragments.albumlist.AlbumListFragment;
+import com.furianrt.itunesmusicapp.main.fragments.emptylist.EmptyListFragment;
+import com.furianrt.itunesmusicapp.main.fragments.hello.HelloFragment;
+import com.furianrt.itunesmusicapp.main.fragments.networkerror.NetworkErrorFragment;
+import com.furianrt.itunesmusicapp.utils.NetworkUtils;
 import com.furianrt.itunesmusicapp.data.model.Album;
-import com.furianrt.itunesmusicapp.general.LoadingDialog;
-import com.furianrt.itunesmusicapp.main.adapter.MainListAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View,
-        MainListAdapter.OnMainListItemInteractionListener, SearchView.OnQueryTextListener {
+        SearchView.OnQueryTextListener, AlbumListFragment.OnListFragmentInteractionListener {
 
-    private static final int LIST_SPAN_COUNT = 3;
-    private static final String BUNDLE_ALBUM_LIST = "albumList";
-    private static final String BUNDLE_RECYCLER_VIEW_POSITION = "recyclerPosition";
     private static final String BUNDLE_SEARCH_QUERY = "searchQuery";
-
-    @BindView(R.id.list_albums)
-    RecyclerView mRecyclerViewAlbums;
 
     @Inject
     MainActivityContract.Presenter mPresenter;
 
-    private MainListAdapter mListAdapter = new MainListAdapter(this);
-    private ArrayList<Album> mAlbumList;
     private String mSearchQuery;
     private Dialog mLoadingDialog;
 
@@ -58,30 +50,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
         mPresenter.attachView(this);
 
-        setupUi();
-
         if (savedInstanceState != null) {
             mSearchQuery = savedInstanceState.getString(BUNDLE_SEARCH_QUERY);
-            //Восстановление состояния RecyclerView
-            mAlbumList = savedInstanceState.getParcelableArrayList(BUNDLE_ALBUM_LIST);
-            mListAdapter.submitList(mAlbumList);
-            Parcelable listState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_VIEW_POSITION);
-            mRecyclerViewAlbums.getLayoutManager().onRestoreInstanceState(listState);
+        } else {
+            //если activity создается в первый раз, показываем экран приветсвия
+            FragmentManager fm = getSupportFragmentManager();
+            String tag = HelloFragment.class.getName();
+            if (fm.findFragmentByTag(tag) == null) {
+                fm.beginTransaction()
+                        .add(R.id.fragment_container, new HelloFragment(), tag)
+                        .commit();
+            }
         }
+
+        setupUi();
     }
 
     private void setupUi() {
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mRecyclerViewAlbums.setLayoutManager(new GridLayoutManager(this, LIST_SPAN_COUNT));
-        mRecyclerViewAlbums.setAdapter(mListAdapter);
 
         mLoadingDialog = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog_loading)
                 .setCancelable(false)
                 .create();
-        mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        mLoadingDialog.getWindow()
+                .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override
@@ -105,9 +100,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BUNDLE_ALBUM_LIST, mAlbumList);
-        outState.putParcelable(BUNDLE_RECYCLER_VIEW_POSITION,
-                mRecyclerViewAlbums.getLayoutManager().onSaveInstanceState());
         outState.putString(BUNDLE_SEARCH_QUERY, mSearchQuery);
     }
 
@@ -119,19 +111,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mPresenter.onSearchQuerySubmit(query);
+        boolean networkAvailable = NetworkUtils.isNetworkAvailable(this);
+        mPresenter.onSearchQuerySubmit(query, networkAvailable);
         return false;
     }
 
     @Override
-    public void onMainListItemClick(Album album) {
-        mPresenter.onAlbumClick(album);
-    }
-
-    @Override
-    public void showAlbums(List<Album> albums) {
-        mAlbumList = new ArrayList<>(albums);
-        mListAdapter.submitList(albums);
+    public void showAlbumList(List<Album> albums) {
+        FragmentManager fm = getSupportFragmentManager();
+        String tag = AlbumListFragment.class.getName();
+        Fragment fragment = fm.findFragmentByTag(tag);
+        if (fragment == null) {
+            fm.beginTransaction()
+                    .replace(R.id.fragment_container, AlbumListFragment.newInstance(albums), tag)
+                    .commit();
+        } else {
+            ((AlbumListFragment) fragment).submitAlbumList(albums);
+        }
     }
 
     @Override
@@ -145,18 +141,38 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     }
 
     @Override
-    public void checkNetworkAvailability() {
-        boolean networkAvailable = NetworkUtils.isNetworkAvailable(this);
-        mPresenter.onNetworkAvailabilityResult(networkAvailable);
+    public void showNetworkError() {
+        FragmentManager fm = getSupportFragmentManager();
+        String tag = NetworkErrorFragment.class.getName();
+        if (fm.findFragmentByTag(tag) == null) {
+            fm.beginTransaction()
+                    .replace(R.id.fragment_container, new NetworkErrorFragment(), tag)
+                    .commit();
+        }
     }
 
     @Override
-    public void showNetworkError() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.network_error)
-                .setPositiveButton(R.string.ok, null)
-                .create()
-                .show();
+    public void showEmptyAlbumList() {
+        FragmentManager fm = getSupportFragmentManager();
+        String tag = EmptyListFragment.class.getName();
+        if (fm.findFragmentByTag(tag) == null) {
+            fm.beginTransaction()
+                    .replace(R.id.fragment_container, new EmptyListFragment(), tag)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onAlbumClick(Album album) {
+        boolean networkAvailable = NetworkUtils.isNetworkAvailable(this);
+        mPresenter.onAlbumClick(album, networkAvailable);
+    }
+
+    @Override
+    public void openAlbumView(Album album) {
+        Intent intent = new Intent(this, AlbumActivity.class);
+        intent.putExtra(AlbumActivity.EXTRA_ALBUM, album);
+        startActivity(intent);
     }
 
     @Override

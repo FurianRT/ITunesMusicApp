@@ -1,4 +1,4 @@
-package com.furianrt.itunesmusicapp.Utils;
+package com.furianrt.itunesmusicapp.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

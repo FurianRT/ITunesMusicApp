@@ -10,23 +10,23 @@ public interface MainActivityContract {
 
     interface View extends BaseView {
 
-        void showAlbums(List<Album> albums);
+        void showAlbumList(List<Album> albums);
 
         void showLoadingIndicator();
 
         void hideLoadingIndicator();
 
-        void checkNetworkAvailability();
-
         void showNetworkError();
+
+        void showEmptyAlbumList();
+
+        void openAlbumView(Album album);
     }
 
     interface Presenter extends BasePresenter<View> {
 
-        void onSearchQuerySubmit(String query);
+        void onSearchQuerySubmit(String query, boolean networkAvailable);
 
-        void onAlbumClick(Album album);
-
-        void onNetworkAvailabilityResult(boolean networkAvailable);
+        void onAlbumClick(Album album, boolean networkAvailable);
     }
 }

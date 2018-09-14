@@ -2,6 +2,8 @@ package com.furianrt.itunesmusicapp.di.presenter;
 
 import android.content.Context;
 
+import com.furianrt.itunesmusicapp.album.AlbumActivityContract;
+import com.furianrt.itunesmusicapp.album.AlbumActivityPresenter;
 import com.furianrt.itunesmusicapp.data.DataManager;
 import com.furianrt.itunesmusicapp.main.MainActivityContract;
 import com.furianrt.itunesmusicapp.main.MainActivityPresenter;
@@ -20,8 +22,13 @@ public class PresenterModule {
 
     @Provides
     @PresenterScope
-    MainActivityContract.Presenter provideStartPresenter(DataManager dataManager) {
+    MainActivityContract.Presenter provideMainActivityPresenter(DataManager dataManager) {
         return new MainActivityPresenter(dataManager);
     }
 
+    @Provides
+    @PresenterScope
+    AlbumActivityContract.Presenter provideAlbumActivityPresenter(DataManager dataManager) {
+        return new AlbumActivityPresenter(dataManager);
+    }
 }

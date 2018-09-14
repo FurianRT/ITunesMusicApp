@@ -2,5 +2,12 @@
     <string name="app_name">ITunesMusicApp</string>
     <string name="action_search">Поиск</string>
     <string name="network_error">Отсутствует интернет-соединение</string>
-    <string name="ok">Понятно</string>
+    <string name="nothing_found">Не могу найти альбом с таким названием</string>
+    <string name="greeting">Экран приветствия</string>
+    <string name="text_album">Альбом:</string>
+    <string name="text_band">Группа:</string>
+    <string name="text_genre">Жанр:</string>
+    <string name="text_country">Страна:</string>
+    <string name="text_year">Год:</string>
+    <string name="text_price">Цена:</string>
 </resources>

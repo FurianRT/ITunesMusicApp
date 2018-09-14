@@ -36,6 +36,9 @@ public class DataManagerImp implements DataManager {
     public Single<List<Track>> getTracksForAlbum(Long albumId) {
         return mApiService.getTracksForAlbum(albumId)
                 .map(ApiTracksResponse::getTracks)
+                .flatMapObservable(Observable::fromIterable)
+                .filter(track -> track.getWrapperType().equals("track"))
+                .toSortedList((t1, t2) -> t1.getTrackNumber() - t2.getTrackNumber())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

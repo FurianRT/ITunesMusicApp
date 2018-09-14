@@ -1,10 +1,10 @@
-package com.furianrt.itunesmusicapp.main.adapter;
+package com.furianrt.itunesmusicapp.main.fragments.albumlist.adapter;
 
 import android.support.v7.util.DiffUtil;
 
 import com.furianrt.itunesmusicapp.data.model.Album;
 
-public class MainDiffCallback extends DiffUtil.ItemCallback<Album> {
+public class AlbumLIstDiffCallback extends DiffUtil.ItemCallback<Album> {
 
     @Override
     public boolean areItemsTheSame(Album oldItem, Album newItem) {

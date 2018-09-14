@@ -73,18 +73,11 @@ public class AppModule {
 
     @Provides
     @AppScope
-    Cache provideCache(Context context) {
-        return new Cache(context.getCacheDir(), 10 * 1024 * 1024);
-    }
-
-    @Provides
-    @AppScope
     OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor,
-                                     Interceptor paramInterceptor, Cache cache) {
+                                     Interceptor paramInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(paramInterceptor)
-                .cache(cache)
                 .build();
     }
 
